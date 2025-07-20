@@ -107,5 +107,20 @@
       taskText.classList.toggle("completed");
     }
   </script>
+  <script>
+  window.onload = function () {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const formattedToday = `${yyyy}-${mm}-${dd}`;
+
+    // Block past dates
+    document.getElementById("taskDate").setAttribute("min", formattedToday);
+    document.getElementById("taskDate").value = formattedToday;
+  };
+
+  // your existing functions can come below this (addTask, etc.)
+</script>
 </body>
 </html>

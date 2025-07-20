@@ -1,126 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TrackMyDay</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-color: #f3f4f6;
       text-align: center;
-      margin: 50px;
-      background-color: #f0f4f8;
+      margin: 0;
+      padding: 20px;
     }
     h1 {
-      color: #333;
+      font-size: 2.5em;
+      margin-bottom: 5px;
     }
-    input, select {
+    h1 span {
+      color: orange;
+    }
+    input, button {
       padding: 10px;
-      border: 1px solid #ccc;
+      margin: 10px;
       border-radius: 8px;
-      margin: 5px;
+      border: 1px solid #ccc;
+      font-size: 1em;
     }
     button {
-      padding: 10px 15px;
-      border-radius: 8px;
+      background-color: #1f2937;
+      color: white;
       cursor: pointer;
-      margin: 5px;
     }
-    .add-btn {
-      background-color: #28a745;
+    .task {
+      background-color: white;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 10px auto;
+      width: 300px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+    .task p {
+      margin: 5px 0;
+    }
+    .task .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .complete-btn {
+      background-color: orange;
       color: white;
       border: none;
     }
     .delete-btn {
-      background-color: #dc3545;
+      background-color: crimson;
       color: white;
       border: none;
-    }
-    .complete-btn {
-      background-color: #ffc107;
-      color: black;
-      border: none;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-      margin-top: 20px;
-    }
-    li {
-      background: #ffffff;
-      padding: 10px;
-      margin: 10px auto;
-      width: 350px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
     .completed {
       text-decoration: line-through;
       color: gray;
     }
-    .task-meta {
-      font-size: 12px;
-      color: #555;
-    }
   </style>
 </head>
 <body>
-  <h1>✨ Welcome to TrackMyDay ✨</h1>
+
+  <h1>✨ Welcome to <strong>TrackMyDay</strong> ✨</h1>
   <p>My Productivity Dashboard is live!</p>
 
-  <input type="text" id="taskInput" placeholder="Add a new task">
-  <input type="date" id="taskDate">
-  <input type="time" id="taskTime">
-  <button class="add-btn" onclick="addTask()">Add Task</button>
+  <input type="text" id="taskInput" placeholder="Add a new task" />
+  <input type="date" id="taskDate" />
+  <input type="time" id="taskTime" />
+  <button onclick="addTask()">Add Task</button>
 
-  <ul id="taskList"></ul>
+  <div id="taskList"></div>
 
   <script>
+    // Set today's date as min
+    window.onload = function () {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      const formattedToday = `${yyyy}-${mm}-${dd}`;
+      const taskDateInput = document.getElementById("taskDate");
+      if (taskDateInput) {
+        taskDateInput.setAttribute("min", formattedToday);
+        taskDateInput.value = formattedToday;
+      }
+    };
+
     function addTask() {
-      const taskInput = document.getElementById("taskInput");
+      const taskText = document.getElementById("taskInput").value;
       const taskDate = document.getElementById("taskDate").value;
       const taskTime = document.getElementById("taskTime").value;
-      const taskText = taskInput.value.trim();
 
-      if (taskText === "") return;
+      if (!taskText || !taskDate || !taskTime) {
+        alert("Please fill in all fields");
+        return;
+      }
 
-      const li = document.createElement("li");
+      const taskList = document.getElementById("taskList");
 
-      li.innerHTML = `
-        <span class="task-text">${taskText}</span>
-        <div class="task-meta">📅 ${taskDate || "No date"} ⏰ ${taskTime || "No time"}</div>
-        <div>
+      const taskBox = document.createElement("div");
+      taskBox.className = "task";
+
+      taskBox.innerHTML = `
+        <p><strong>${taskText}</strong></p>
+        <p>📅 ${taskDate} &nbsp; ⏰ ${taskTime}</p>
+        <div class="btn-group">
           <button class="complete-btn" onclick="markComplete(this)">Complete</button>
-          <button class="delete-btn" onclick="this.parentElement.parentElement.remove()">Delete</button>
+          <button class="delete-btn" onclick="deleteTask(this)">Delete</button>
         </div>
       `;
 
-      document.getElementById("taskList").appendChild(li);
-      taskInput.value = "";
-      document.getElementById("taskDate").value = "";
+      taskList.appendChild(taskBox);
+
+      // Clear inputs
+      document.getElementById("taskInput").value = "";
       document.getElementById("taskTime").value = "";
     }
 
-    function markComplete(button) {
-      const taskText = button.parentElement.parentElement.querySelector(".task-text");
-      taskText.classList.toggle("completed");
+    function markComplete(btn) {
+      const task = btn.closest(".task");
+      const text = task.querySelector("p strong");
+      text.classList.toggle("completed");
+    }
+
+    function deleteTask(btn) {
+      const task = btn.closest(".task");
+      task.remove();
     }
   </script>
-  <script>
-  window.onload = function () {
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const formattedToday = `${yyyy}-${mm}-${dd}`;
 
-    // Block past dates
-    document.getElementById("taskDate").setAttribute("min", formattedToday);
-    document.getElementById("taskDate").value = formattedToday;
-  };
-
-  // your existing functions can come below this (addTask, etc.)
-</script>
 </body>
 </html>
